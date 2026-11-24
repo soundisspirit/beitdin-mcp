@@ -1,0 +1,31 @@
+{
+  "name": "beitdin-mcp",
+  "version": "0.1.0",
+  "description": "MCP server that runs a brief through three-role expert boards using direct model API calls.",
+  "type": "module",
+  "private": true,
+  "license": "MIT",
+  "bin": {
+    "beitdin-mcp": "src/index.js"
+  },
+  "files": [
+    "src",
+    "boards",
+    "skills",
+    "README.md",
+    "LICENSE",
+    ".env.example"
+  ],
+  "engines": {
+    "node": ">=20.12"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.7.0",
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "zod": "^4.6.7"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "category": "engineering",
+  "boards": [
+    {
+      "id": "architecture",
+      "name": "architecture_board",
+      "description": "Pick this board when deciding the overall structure of a new system or a major feature before implementation starts.",
+      "tags": ["architecture", "system-design", "security", "requirements"],
+      "roles": [
+        {"title": "technical_architect", "focus": "Focus on scalability, architecture patterns and system structure. Do not design UI or UX."},
+        {"title": "security_expert", "focus": "Focus on security, attack vectors and data protection. Do not design features."},
+        {"title": "functional_architect", "focus": "Focus on business logic, functional requirements and mapping user needs to system capabilities."}
+      ]
+    }
+  ]
+}

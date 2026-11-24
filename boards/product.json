@@ -1,0 +1,16 @@
+{
+  "category": "product",
+  "boards": [
+    {
+      "id": "product",
+      "name": "product_board",
+      "description": "Pick this board for a general product decision or feature brief that needs user value, experience and feasibility weighed together.",
+      "tags": ["product", "feature", "prioritization", "ux"],
+      "roles": [
+        {"title": "product_manager", "focus": "Focus on user value, business goals and feature prioritization."},
+        {"title": "ux_designer", "focus": "Focus on user experience, accessibility and interface flow."},
+        {"title": "tech_lead", "focus": "Focus on feasibility, technical debt and development speed."}
+      ]
+    }
+  ]
+}
