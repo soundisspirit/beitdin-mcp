@@ -4,32 +4,79 @@ An MCP server based on [beitdin.dev](https://beitdin.dev). Any MCP client, such 
 
 The roles do not run agents, use tools or read files. Each one sees its role prompt and the brief, so the brief has to contain everything they need.
 
+```text
+                  ┌──────────────────────────────────────┐
+                  │      MCP Client / Coding Agent       │
+                  │   (Claude Code, Antigravity, stdio)  │
+                  └──────────────────┬───────────────────┘
+                                     │
+                                     │ run_board(board_id / roles, brief)
+                                     │ list_boards, get_board, save_board
+                                     ▼
+                  ┌──────────────────────────────────────┐
+                  │      beitdin-mcp Server (Node.js)    │
+                  │  Resolves 3 roles & provider keys    │
+                  └──────────────────┬───────────────────┘
+                                     │ 3 parallel direct model API calls
+            ┌────────────────────────┼────────────────────────┐
+            ▼                        ▼                        ▼
+ ┌──────────────────────┐ ┌──────────────────────┐ ┌──────────────────────┐
+ │ Lane 1: Role 1       │ │ Lane 2: Role 2       │ │ Lane 3: Role 3       │
+ │ Role prompt + brief  │ │ Role prompt + brief  │ │ Role prompt + brief  │
+ └──────────┬───────────┘ └──────────┬───────────┘ └──────────┬───────────┘
+            └────────────────────────┼────────────────────────┘
+                                     │ Anthropic / OpenAI / Gemini /
+                                     │ Mistral / Groq / Together / Ollama
+                                     ▼
+                  ┌──────────────────────────────────────┐
+                  │      Combined Markdown Document      │
+                  │  3 independent expert perspectives   │
+                  └──────────────────────────────────────┘
+```
+
 ## Setup
 
 Requires Node 20.12 or newer.
 
+### Quick install with any coding agent
+
+Paste this prompt into your coding agent so it sets up the server and skill in its own configuration:
+
+```text
+Clone https://github.com/soundisspirit/beitdin-mcp, run npm ci, copy .env.example to .env, register src/index.js as a user-level stdio MCP server named "beitdin", and copy skills/beitdin-board into my agent skills folder. Keep my existing MCP entries intact, then tell me the .env path so I can set my API keys and BEITDIN_MODELS.
+```
+
+### Universal manual setup (any MCP client)
+
+1. Clone and install dependencies:
+
 ```sh
-npm install
+git clone https://github.com/soundisspirit/beitdin-mcp.git
+cd beitdin-mcp
+npm ci
 cp .env.example .env
 ```
 
-In `.env`, set an API key for at least one provider and choose your default model in `BEITDIN_MODELS`.
+2. In `.env`, set an API key for at least one provider and choose your default model in `BEITDIN_MODELS`.
 
-Register the server with Claude Code, using the real path to this folder:
-
-```sh
-claude mcp add --scope user beitdin -- node "/path/to/this/folder/src/index.js"
-```
-
-Other MCP clients use the same stdio command:
+3. Register the stdio command in your MCP client's `mcpServers` configuration, using the absolute path to `src/index.js`:
 
 ```json
-{ "mcpServers": { "beitdin": { "command": "node", "args": ["/path/to/this/folder/src/index.js"] } } }
+{
+  "mcpServers": {
+    "beitdin": {
+      "command": "node",
+      "args": ["/absolute/path/to/beitdin-mcp/src/index.js"]
+    }
+  }
+}
 ```
+
+If your client manages MCP servers via a CLI command or stores environment variables inside the config file instead of `.env`, point its stdio command to `node /absolute/path/to/beitdin-mcp/src/index.js` and optionally pass `BEITDIN_MODELS`, provider keys, `BEITDIN_BOARDS_DIR` and `BEITDIN_RUNS_DIR` in an `"env"` object on `"beitdin"`.
 
 ## Agent skill
 
-`skills/beitdin-board/SKILL.md` teaches an agent when to use a board and how to write a good brief. Copy the `beitdin-board` folder to `~/.claude/skills/` for Claude Code, or to `~/.gemini/config/skills/` for Antigravity. For Antigravity, also add the server to `~/.gemini/config/mcp_config.json`.
+`skills/beitdin-board/SKILL.md` uses the open `SKILL.md` format to teach any coding agent when to pick a board, how to write a self-contained brief, and how to report the three perspectives. Copy the `skills/beitdin-board` folder into your coding agent's global or project skills directory, or add `SKILL.md` to your agent's custom instructions.
 
 ## Tools
 
